@@ -1,2 +1,2 @@
 # Preula-XML-Sitemap-Generator
-jQuery + PHP, free sitemap.xml generator
+jQuery + PHP, free and unlimited sitemap.xml generator
