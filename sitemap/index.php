@@ -1,3 +1,7 @@
+<?php
+$url = $_SERVER["SERVER_PORT"]==443?"https":"http";;
+$url .= "://".$_SERVER["HTTP_HOST"];
+?>
 <!DOCTYPE HTML>
 <html lang="pt-br">
 <head>
@@ -127,7 +131,7 @@ function gerar_xml(){
 	$.ajax({
 		type: "POST",
 		url: "save.php",
-		data: {data:JSON.stringify(paginas)},
+		data: {data:JSON.stringify(paginas),url:<?php echo "\"".$url."\"";?>},
 		async: true,
 		contentType: "application/x-www-form-urlencoded;charset=UTF-8",
 		success: function(d){
@@ -144,7 +148,7 @@ function gerar_xml(){
 </head>
 
 <body>
-<h3>Creating Sitemap: <?php echo $_SERVER["SERVER_PORT"]==443?"https":"http"; echo "://".$_SERVER["HTTP_HOST"]?></h3>
+<h3>Creating Sitemap: <?php echo $url;?></h3>
 Total Pages: <label id="total">0</label><br>
 Reading Page: <label id="lidas">0</label><br>
 Process: <label id="processos">0</label><br><br>
