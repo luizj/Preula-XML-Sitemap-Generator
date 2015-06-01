@@ -153,7 +153,7 @@ Total Pages: <label id="total">0</label><br>
 Reading Page: <label id="lidas">0</label><br>
 Process: <label id="processos">0</label><br><br>
 <button onclick="start();" id="btn_start">Start</button>
-<button onclick="pause();" id="btn_pause" disabled>Pausar</button>
+<button onclick="pause();" id="btn_pause" disabled>Pause</button>
 <button onclick="gerar_xml();" id="btn_gerar" disabled>Create XML</button>
 <br><br>
 Info: <label id="info"></label><br>
