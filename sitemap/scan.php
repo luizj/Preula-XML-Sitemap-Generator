@@ -59,7 +59,7 @@ function is_crap($url){
 function preg_links($url_, $matches){
 	$ret = array();
 	foreach($matches as $match){//2=link address, 3=link text
-		if(preg_match("/(.jpg|.gif|.png|.xls|.doc|.rar|.zip|.exe|.txt|.bmp|.ttf)/i", $match[2]))continue;
+		if(preg_match("/(.jpg|.jpeg|.gif|.png|.xls|.doc|.rar|.zip|.exe|.txt|.bmp|.ttf)/i", $match[2]))continue;
 		$match[2] = htmlspecialchars_decode($match[2]);
 
 		if(strpos($match[2],"'")===0 || strpos($match[2],'"')===0)$match[2]=substr($match[2], 1);
