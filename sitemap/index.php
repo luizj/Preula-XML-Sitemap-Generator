@@ -131,7 +131,7 @@ function gerar_xml(){
 	$.ajax({
 		type: "POST",
 		url: "save.php",
-		data: {data:JSON.stringify(paginas),url:<?php echo "\"".$url."\"";?>},
+		data: {data:JSON.stringify(paginas)},
 		async: true,
 		contentType: "application/x-www-form-urlencoded;charset=UTF-8",
 		success: function(d){
