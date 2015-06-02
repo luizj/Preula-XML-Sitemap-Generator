@@ -1,6 +1,7 @@
 <?php
 
 // Max urls per file: 50.000
+// Max file size: 10 MB
 // changefreq: never, anual, monthly, weekly, daily, hourly, always
 // url(length): 12 ~ 2048
 // priority: 0.0 ~ 1.0 (Default: 0.5)
@@ -63,7 +64,7 @@ for($i=0; $i<sizeof($urls); $i++){
 	// Change
 	$changeArr  = ['daily','weekly','monthly'];
 	$temp_change = substr_count($urls[$i][0],'/')>sizeof($changeArr)?(sizeof($changeArr)-1):(substr_count($urls[$i][0],'/')-1);
-	$changefreq = $changeArr[substr_count($urls[$i][0],'/')-1];
+	$changefreq = $changeArr[$temp_change];
 
 	$urls[$i][0] = str_replace("&","&amp;", str_replace("&amp;","&",$urls[$i][0]));
 	$urls[$i][0] = str_replace("'","&apos;", $urls[$i][0]);
