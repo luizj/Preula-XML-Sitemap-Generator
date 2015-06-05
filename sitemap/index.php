@@ -78,8 +78,7 @@ function get_url(){
 				}
 				if(val=="/")return;
 				if(val.u == undefined || val.u[0]!="/"){
-					console.log(val);
-					$("#error").append(url+" ("+val.u+")<br>");
+					$("#error").append(url+" ("+val+")("+val.u+")<br>");
 					return;
 				}
 				if(val.u=="/")return;
