@@ -94,7 +94,6 @@ function get_url(){
 			process[id_process] = false;
 		}
 	});
-	process[id_process] = false;
 }
 
 function start(){
