@@ -34,7 +34,7 @@ function AddURL($sitemap, $url, $changefreq="", $priority="", $lastmod=""){
 	if(strlen($url) > 2048)return;
 
 				       $add  = '    <url>';
-				       $add .= '\n       <image:loc>'.$url.'</image:loc>';
+				       $add .= '\n       <loc>'.$url.'</loc>';
 	if($changefreq!="")$add .= '\n       <changefreq>'.$changefreq.'</changefreq>';
 	if($priority!="")  $add .= '\n       <priority>'.$priority.'</priority>';
 	if($lastmod!="")   $add .= '\n       <lastmod>'.$lastmod.'</lastmod>';
