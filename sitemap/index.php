@@ -45,7 +45,7 @@ function get_url(){
 		if(tmp_proc==0 && pages.length==(last_read+1)){
 			pause();
 			$('#btn_start').prop('disabled', true);
-			gerar_xml();
+			create_xml();
 		}
 		return;
 	}
