@@ -42,7 +42,7 @@ function get_url(){
         }
     }
 	if(url==""){
-		if(tmp_proc==0 && pages.length==(last_read+1)){
+		if(tmp_proc===0 && pages.length===(last_read+1) && last_read>0){
 			pause();
 			$('#btn_start').prop('disabled', true);
 			create_xml();
