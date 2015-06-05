@@ -62,11 +62,9 @@ function get_url(){
 		type: "POST",
 		data: {d:url},
 		timeout: 1000*600,
-		success: function(data){
-			process[id_process] = false;
-
-			var temp=[]; //[url,read,array_images]
-			$.each(data, function(key,val){
+		success: function(d){
+			var temp=[]; //[{url,read,{image_url,title,last-modified]}]
+			$.each(d, function(key,val){
 				if(val.f=="1"){
 					if($.inArray(val.u, images) >= 0){
 						return;
@@ -91,9 +89,12 @@ function get_url(){
 		},
 		error: function(d,e){
 			console.error('['+e+'] Error URL: '+url);
+		},
+		complete: function(){
 			process[id_process] = false;
 		}
 	});
+	process[id_process] = false;
 }
 
 function start(){
