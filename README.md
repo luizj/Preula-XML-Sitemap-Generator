@@ -2,9 +2,9 @@
 jQuery + PHP, free and unlimited sitemap.xml generator
 
 # Support
-Google Sitemap XML (OK!)
+Google Sitemap XML
 
-Google Image Sitemap XML (SOON)
+Google Image Sitemap XML
 
 # How to use
 1 - Put the files into your website example:
