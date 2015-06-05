@@ -171,19 +171,19 @@ function get_url($url_){
     $data = @file_get_contents($url, false, stream_context_create($arrContextOptions)) or die('["Error: 404 Not Exists"]');
 
 	$ret = array();
-	if(preg_match_all("/<a\s[^>]*href=([\"\']??)([^\\1 >]*?)\\1[^>]*>(.*)<\/a>/siU", $data, $matches, PREG_SET_ORDER)){
+	if(preg_match_all("/<a\s[^>]*href=([\"\']??)([^\\1 >]*?)\\1[^>]*>(.*)<\/a>/simU", $data, $matches, PREG_SET_ORDER)){
 		$tmp_ret = preg_links($url_, $matches);
 		if(sizeof($tmp_ret)>0)$ret=array_merge($ret, $tmp_ret);
 	}
-	if(preg_match_all("/<img\s[^>]*src=([\"\']??)([^\\1 >]*?)\\1[^>]*>/siU", $data, $matches, PREG_SET_ORDER)){
+	if(preg_match_all("/<img\s[^>]*src=([\"\']??)([^\\1 >]*?)\\1[^>]*>/simU", $data, $matches, PREG_SET_ORDER)){
 		$tmp_ret = preg_links($url_, $matches);
 		if(sizeof($tmp_ret)>0)$ret=array_merge($ret, $tmp_ret);
 	}
-	if(preg_match_all("/<frame\s[^>]*src=([\"\']??)([^\\1 >]*?)\\1[^>]*>/siU", $data, $matches, PREG_SET_ORDER)){
+	if(preg_match_all("/<frame\s[^>]*src=([\"\']??)([^\\1 >]*?)\\1[^>]*>/simU", $data, $matches, PREG_SET_ORDER)){
 		$tmp_ret = preg_links($url_, $matches);
 		if(sizeof($tmp_ret)>0)$ret=array_merge($ret, $tmp_ret);
 	}
-	if(preg_match_all("/<iframe\s[^>]*src=([\"\']??)([^\\1 >]*?)\\1[^>]*>/siU", $data, $matches, PREG_SET_ORDER)){
+	if(preg_match_all("/<iframe\s[^>]*src=([\"\']??)([^\\1 >]*?)\\1[^>]*>/simU", $data, $matches, PREG_SET_ORDER)){
 		$tmp_ret = preg_links($url_, $matches);
 		if(sizeof($tmp_ret)>0)$ret=array_merge($ret, $tmp_ret);
 	}
