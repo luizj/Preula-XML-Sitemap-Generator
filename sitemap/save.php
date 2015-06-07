@@ -26,18 +26,23 @@ function AddHeader($sitemap){
 
 function AddHeader_image($sitemap){
 	AddXML($sitemap,
-			'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">',
+			'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">',
 			"w+");
 }
 
-function AddURL($sitemap, $url, $changefreq="", $priority="", $lastmod=""){
+function AddHeader_index($sitemap){
+	AddXML($sitemap,
+			'<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+			"w+");
+}
+
+function AddURL($sitemap, $url, $changefreq="", $priority=""){
 	if(strlen($url) > 2048)return;
 
 				       $add  = '    <url>';
 				       $add .= '\n       <loc>'.$url.'</loc>';
 	if($changefreq!="")$add .= '\n       <changefreq>'.$changefreq.'</changefreq>';
 	if($priority!="")  $add .= '\n       <priority>'.$priority.'</priority>';
-	if($lastmod!="")   $add .= '\n       <lastmod>'.$lastmod.'</lastmod>';
 
 	AddXML($sitemap, $add, "a+");
 }
@@ -57,10 +62,20 @@ function AddImg($sitemap, $url, $lastmod, $title){
 	AddXML($sitemap, $add, "a+");
 }
 
+function AddSitemap($sitemap, $url, $lastmod=""){
+	$add  = '    <sitemap>';
+	$add .= '\n       <loc>'.$url.'</loc>';
+	$add .= '\n       <lastmod>'.$lastmod.'</lastmod>';
+	$add .= '    </sitemap>';
+	AddXML($sitemap, $add, "a+");
+}
+
 function AddFooter($sitemap){
-	AddXML($sitemap,
-			'</urlset>',
-			"a+");
+	AddXML($sitemap, '</urlset>', "a+");
+}
+
+function AddFooter_index($sitemap){
+	AddXML($sitemap, '</sitemapindex>', "a+");
 }
 
 //----------------------------------------
@@ -99,7 +114,7 @@ for($i=0; $i<sizeof($urls); $i++){
 	$priority = $priority/10;
 
 	// Change
-	$changeArr  = ['daily','weekly','monthly'];
+	$changeArr  = array('daily','weekly','monthly');
 	$temp_change = substr_count($urls[$i][0],'/')>sizeof($changeArr)?(sizeof($changeArr)-1):(substr_count($urls[$i][0],'/')-1);
 	$changefreq = $changeArr[$temp_change];
 
@@ -109,7 +124,7 @@ for($i=0; $i<sizeof($urls); $i++){
 	$urls[$i][0] = str_replace(">","&gt", $urls[$i][0]);
 	$urls[$i][0] = str_replace("<","&lt;", $urls[$i][0]);
 
-	AddURL($sitemap_link, $url.$urls[$i][0], $changefreq, $priority, "");
+	AddURL($sitemap_link, $url.$urls[$i][0], $changefreq, $priority);
 	AddURL_end($sitemap_link);
 }
 AddFooter($sitemap_link);
@@ -136,7 +151,7 @@ for($i=0; $i<sizeof($urls); $i++){
 	$priority = $priority/10;
 
 	// Change
-	$changeArr  = ['daily','weekly','monthly'];
+	$changeArr  = array('daily','weekly','monthly');
 	$temp_change = substr_count($urls[$i][0],'/')>sizeof($changeArr)?(sizeof($changeArr)-1):(substr_count($urls[$i][0],'/')-1);
 	$changefreq = $changeArr[$temp_change];
 
@@ -146,7 +161,7 @@ for($i=0; $i<sizeof($urls); $i++){
 	$urls[$i][0] = str_replace(">","&gt", $urls[$i][0]);
 	$urls[$i][0] = str_replace("<","&lt;", $urls[$i][0]);
 
-	AddURL("img-".$sitemap_image, $url.$urls[$i][0], $changefreq, $priority, "");
+	AddURL("img-".$sitemap_image, $url.$urls[$i][0], $changefreq, $priority);
 
 	// Add Images
 	$images = $urls[$i][2];
@@ -168,16 +183,14 @@ AddFooter("img-".$sitemap_image);
 /*
 ** Main Sitemap
 */
-AddHeader("");
+AddHeader_index("");
 for($i=0; $i<=$sitemap_link; $i++){
-	AddURL("", $url."/sitemap-".$i.".xml", "", "", date("Y-m-d"));
-	AddURL_end("");
+	AddSitemap("", $url."/sitemap-".$i.".xml", date("Y-m-d"));
 }
 for($i=0; $i<=$sitemap_image; $i++){
-	AddURL("", $url."/sitemap-img-".$i.".xml", "", "", date("Y-m-d"));
-	AddURL_end("");
+	AddSitemap("", $url."/sitemap-img-".$i.".xml", date("Y-m-d"));
 }
-AddFooter("");
+AddFooter_index("");
 
 echo "Finish!";
 ?>
