@@ -108,8 +108,13 @@ function preg_links($url_, $matches){
 				$ret[$i]['u'] = "Error: Rel Tag Without Nofollow [".htmlspecialchars($match[0])."]";
 			}
 			continue;
+		}else{
+			if(strpos($match[0],"<a")===0 && preg_match("#rel\s*=\s*['\"\s*]nofollow[\s*'\"]#", $match[0])){
+				continue;
+			}
 		}
-		else if(is_full_url($match[2])){
+		
+		if(is_full_url($match[2])){
 			$match[2] = str_replace(array("http:", "https:", "//".$_SERVER["HTTP_HOST"]."/", "//".$_SERVER["HTTP_HOST"]), "", $match[2]);
 			$ret[$i]['u'] = "/".$match[2];
 		}
