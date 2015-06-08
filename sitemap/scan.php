@@ -70,6 +70,14 @@ function parseHeaders($headers){
     }
     return $head;
 }
+
+function str_to_utf8($str){
+    if (mb_detect_encoding($str, 'UTF-8', true) === false){
+       $str = utf8_encode($str);
+    }
+    return $str;
+}
+
 /*function is_sub_folder($url){
 	if(strpos($url,"../")>=0)return true;
 	return false;
@@ -134,7 +142,7 @@ function preg_links($url_, $matches){
 			$ret[$i]['f'] = 1;
 			$ret[$i]['t'] = strip_tags($match[3]);
 			if(preg_match("#alt\s*=\s*['\"](.*?)['\"]#i", $match[0], $alt)){
-				$ret[$i]['t'] = $alt[1];
+				$ret[$i]['t'] = str_to_utf8($alt[1]);
 			}
 
 			$arrContextOptions=array(
