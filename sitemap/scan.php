@@ -83,10 +83,10 @@ function str_to_utf8($str){
 	return false;
 }*/
 
-function preg_links($url_, $matches){
+function preg_links($url_, $matches, $isfile){
 	global $REQUEST_SCHEME;
 
-    $url = $REQUEST_SCHEME."://".$_SERVER["HTTP_HOST"];
+	$url = $REQUEST_SCHEME."://".$_SERVER["HTTP_HOST"];
 
 	$ret = array();
 	$i=-1;
@@ -142,10 +142,10 @@ function preg_links($url_, $matches){
 			$ret[$i]['u'] = "Error: Invalid URL";
 		}
 
-		$ret[$i]['f'] = 0;
-		if(is_image($match[2])){
+		$ret[$i]['f'] = $isfile;
+		if(is_image($match[2]) || $ret[$i]['f']==1){
 			$ret[$i]['f'] = 1;
-			$ret[$i]['t'] = strip_tags($match[3]);
+			$ret[$i]['t'] = str_to_utf8(strip_tags($match[3]));
 			if(preg_match("#alt\s*=\s*['\"](.*?)['\"]#i", $match[0], $alt)){
 				$ret[$i]['t'] = str_to_utf8($alt[1]);
 			}
@@ -185,19 +185,19 @@ function get_url($url_){
 
 	$ret = array();
 	if(preg_match_all("/<a\s[^>]*href=([\"\']??)([^\\1 >]*?)\\1[^>]*>(.*)<\/a>/simU", $data, $matches, PREG_SET_ORDER)){
-		$tmp_ret = preg_links($url_, $matches);
+		$tmp_ret = preg_links($url_, $matches, 0);
 		if(sizeof($tmp_ret)>0)$ret=array_merge($ret, $tmp_ret);
 	}
 	if(preg_match_all("/<img\s[^>]*src=([\"\']??)([^\\1 >]*?)\\1[^>]*>/simU", $data, $matches, PREG_SET_ORDER)){
-		$tmp_ret = preg_links($url_, $matches);
+		$tmp_ret = preg_links($url_, $matches, 1);
 		if(sizeof($tmp_ret)>0)$ret=array_merge($ret, $tmp_ret);
 	}
 	if(preg_match_all("/<frame\s[^>]*src=([\"\']??)([^\\1 >]*?)\\1[^>]*>/simU", $data, $matches, PREG_SET_ORDER)){
-		$tmp_ret = preg_links($url_, $matches);
+		$tmp_ret = preg_links($url_, $matches, 0);
 		if(sizeof($tmp_ret)>0)$ret=array_merge($ret, $tmp_ret);
 	}
 	if(preg_match_all("/<iframe\s[^>]*src=([\"\']??)([^\\1 >]*?)\\1[^>]*>/simU", $data, $matches, PREG_SET_ORDER)){
-		$tmp_ret = preg_links($url_, $matches);
+		$tmp_ret = preg_links($url_, $matches, 0);
 		if(sizeof($tmp_ret)>0)$ret=array_merge($ret, $tmp_ret);
 	}
 
