@@ -104,7 +104,7 @@ function preg_links($url_, $matches){
 		}
 		if(is_external($match[2])){
 			//find nofollow
-			if(strpos($match[0],"<a")===0 && !preg_match("#rel\s*=\s*['\"]nofollow['\"]#", $match[0])){
+			if(strpos($match[0],"<a")===0 && !preg_match("#rel\s*=\s*['\"\s*]nofollow[\s*'\"]#", $match[0])){
 				$ret[$i]['u'] = "Error: Rel Tag Without Nofollow [".htmlspecialchars($match[0])."]";
 			}
 			continue;
