@@ -4,9 +4,9 @@ jQuery + PHP, free and unlimited sitemap.xml generator
 # Support
 Require PHP 5.3.0+
 
-Google Sitemap XML
+Google Sitemap XML (Working!)
 
-Google Image Sitemap XML
+Google Image Sitemap XML (Working!)
 
 # How to use
 1 - Put the files into your website example:
