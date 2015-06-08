@@ -168,7 +168,7 @@ function preg_links($url_, $matches, $isfile){
 		}
 
 		// Ignore #
-		if(strpos($url,"#")>0){
+		if(strpos($ret[$i]['u'],"#")>0){
 			$ex = explode("#",$ret[$i]['u']);
 			$ret[$i]['u'] = $ex[0];
 		}
