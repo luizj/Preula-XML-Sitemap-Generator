@@ -86,7 +86,7 @@ function str_to_utf8($str){
 function preg_links($url_, $matches, $isfile){
 	global $REQUEST_SCHEME;
 
-	$url = $REQUEST_SCHEME."://".$_SERVER["HTTP_HOST"];
+    $url = $REQUEST_SCHEME."://".$_SERVER["HTTP_HOST"];
 
 	$ret = array();
 	$i=-1;
@@ -113,7 +113,7 @@ function preg_links($url_, $matches, $isfile){
 				continue;
 			}
 		}
-		
+
 		if(is_full_url($match[2])){
 			$match[2] = str_replace(array("http:", "https:", "//".$_SERVER["HTTP_HOST"]."/", "//".$_SERVER["HTTP_HOST"]), "", $match[2]);
 			$ret[$i]['u'] = "/".$match[2];
@@ -142,6 +142,7 @@ function preg_links($url_, $matches, $isfile){
 			$ret[$i]['u'] = "Error: Invalid URL";
 		}
 
+		// Get title and modified date
 		$ret[$i]['f'] = $isfile;
 		if(is_image($match[2]) || $ret[$i]['f']==1){
 			$ret[$i]['f'] = 1;
@@ -156,7 +157,7 @@ function preg_links($url_, $matches, $isfile){
 					"verify_peer_name"=>false,
 				),
 			);
-			$ret[$i]['m'] = ""; //blank for this sitemap definition
+			$ret[$i]['m'] = ""; // Disabled for this sitemap definition
 			/*$data = @file_get_contents($url.$ret[$i]['u'], false, stream_context_create($arrContextOptions));
 			if($data){
 				$headers = parseHeaders($http_response_header);
@@ -164,6 +165,12 @@ function preg_links($url_, $matches, $isfile){
 		    		$ret[$i]['m'] = date("Y-m-d",strtotime($headers['Last-Modified']));
 		    	}
 			}*/
+		}
+
+		// Ignore #
+		if(strpos($url,"#")>0){
+			$ex = explode("#",$ret[$i]['u']);
+			$ret[$i]['u'] = $ex[0];
 		}
 	}
 	return $ret;
