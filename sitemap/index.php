@@ -88,7 +88,7 @@ function get_url(){
 			});
 		},
 		error: function(d,e){
-			console.error('['+e+'] Error URL: '+url);
+			console.error('['+e+'] Error URL: '+url+'\nResponseText:'+d.responseText);
 		},
 		complete: function(){
 			process[id_process] = false;
