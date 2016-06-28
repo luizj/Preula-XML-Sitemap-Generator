@@ -190,6 +190,13 @@ function get_url($url_){
     $url = str_replace(" ", "%20",$url);
     $data = @file_get_contents($url, false, stream_context_create($arrContextOptions)) or die('["Error: 404 Not Exists"]');
 
+	$headers = parseHeaders($http_response_header);
+	if(isset($headers['Content-Type'])){
+		if(strpos($headers['Content-Type'], 'text/html') === false) {
+			die('["Error: Not contain html"]');
+		}
+	}
+	
 	$ret = array();
 	if(preg_match_all("/<a\s[^>]*href=([\"\']??)([^\\1 >]*?)\\1[^>]*>(.*)<\/a>/simU", $data, $matches, PREG_SET_ORDER)){
 		$tmp_ret = preg_links($url_, $matches, 0);
