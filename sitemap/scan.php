@@ -1,5 +1,4 @@
 <?php
-header('Content-Type: application/json');
 set_time_limit(0);
 
 $REQUEST_SCHEME = $_SERVER["SERVER_PORT"]==443?"https":"http";
@@ -222,6 +221,7 @@ function get_url($url_){
 
     $ret = json_encode($ret);
     if(!$ret)return '["Error: JSON Error('.$url_.')"]';
+    header('Content-Type: application/json');
     return $ret;
 }
 
