@@ -15,7 +15,6 @@ var images=['/']; //[url]
 var process=[];
 var max_process=10;
 var timer = 0;
-var last_read = 0;
 var paused=false;
 
 for(var i=0; i<max_process; i++)process[i] = false;
@@ -23,13 +22,13 @@ for(var i=0; i<max_process; i++)process[i] = false;
 function print_status(){
 	$("#images").html(images.length);
 	$("#total").html(pages.length);
-    $("#reads").html((last_read+1));
-    $("#process").html($.grep(process, function(a){return a===true;}).length);
+    $("#reads").html($.grep(pages,function(a){return a[1]==='read';}).length);
+    $("#process").html($.grep(process,function(a){return a===true;}).length);
 }
 function get_url(){
 	if(paused){return;}
 
-	var tmp_notreads = $.grep(pages, function(a){return a[1]==='not_read';}).length;
+	var tmp_notreads = $.grep(pages,function(a){return a[1]==='not_read';}).length;
 	
 	var id_process = process.indexOf(false);
 	if(id_process >= 0 && tmp_notreads>0){
@@ -41,14 +40,14 @@ function get_url(){
 	var j=0;
 	for(j=0; j<$(pages).length; j++){
         if(pages[j][1] == 'not_read'){
-			last_read=j;
         	url = pages[j][0];
         	pages[j][1] = 'reading';
         	break;
         }
     }
 	if(url=="" && pages.length>1){
-        if(tmp_notreads==0 && pages.length===(last_read+1) && last_read>0){
+		var tmp_reads = $.grep(pages,function(a){return a[1]==='read';}).length;
+        if(tmp_notreads==0 && tmp_reads>1){
 			pause();
 			$('#btn_start').prop('disabled', true);
 			create_xml();
