@@ -22,8 +22,8 @@ for(var i=0; i<max_process; i++)process[i] = false;
 function print_status(){
 	$("#images").html(images.length);
 	$("#total").html(pages.length);
-    $("#reads").html($.grep(pages,function(a){return a[1]==='read';}).length);
-    $("#process").html($.grep(process,function(a){return a===true;}).length);
+	$("#reads").html($.grep(pages,function(a){return a[1]==='read';}).length);
+	$("#process").html($.grep(process,function(a){return a===true;}).length);
 }
 function get_url(){
 	if(paused){return;}
@@ -34,18 +34,7 @@ function get_url(){
 	if(id_process >= 0 && tmp_notreads>0){
 		process[id_process] = true;
 		print_status();
-    }else{return;}
-	
-	var url="";
-	var j=0;
-	for(j=0; j<$(pages).length; j++){
-        if(pages[j][1] == 'not_read'){
-        	url = pages[j][0];
-        	pages[j][1] = 'reading';
-        	break;
-        }
-    }
-	if(url=="" && pages.length>1){
+    }else{	
 		var tmp_reads = $.grep(pages,function(a){return a[1]==='read';}).length;
         if(tmp_notreads==0 && tmp_reads>1){
 			pause();
@@ -54,15 +43,25 @@ function get_url(){
 		}
 		return;
 	}
+	
+	var url="";
+	var j=0;
+	for(j=0; j<$(pages).length; j++){
+		if(pages[j][1] == 'not_read'){
+			url = pages[j][0];
+			pages[j][1] = 'reading';
+			break;
+		}
+	}
 
-    $("#info").html(url);
-    $.ajax({
+	$("#info").html(url);
+	$.ajax({
 		url: "scan.php",
 		dataType: "json",
 		async: true,
 		type: "POST",
 		data: {d:url},
-		timeout: 10000,
+		timeout: 15000,
 		success: function(d){
 			var temp=[]; //[{url,read,{image_url,title,last-modified]}]
 			$.each(d, function(key,val){
@@ -85,7 +84,7 @@ function get_url(){
         	pages[j][1] = 'read';
 		},
 		error: function(d,e,c){
-        	pages[j][1] = 'not_read';
+			pages[j][1] = 'not_read';
 			console.error('['+e+'] Error URL: '+url+' (Reading again..)');
 		},
 		complete: function(){
