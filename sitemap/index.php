@@ -7,52 +7,54 @@ $url .= "://".$_SERVER["HTTP_HOST"];
 <head>
 <title>Preula Sitemap Generator</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<script src="jquery-2.1.4.min.js" type="text/javascript"></script>
+<script src="jquery-3.3.1.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 
-var pages=[["/",false,[]]]; //[url,read,array_images]
+var pages=[["/",'not_read',[]]]; //[url,read,array_images]
 var images=['/']; //[url]
 var process=[];
-var max_process=50;
+var max_process=10;
 var timer = 0;
 var last_read = 0;
 var paused=false;
 
 for(var i=0; i<max_process; i++)process[i] = false;
 
-function get_url(){
+function print_status(){
 	$("#images").html(images.length);
 	$("#total").html(pages.length);
     $("#reads").html((last_read+1));
+    $("#process").html($.grep(process, function(a){return a===true;}).length);
+}
+function get_url(){
+	if(paused){return;}
 
-    var tmp_proc = $.grep(process, function(a){return a===true;}).length;
-    $("#process").html(tmp_proc);
-
-	if(paused)return;
-
+	var tmp_notreads = $.grep(pages, function(a){return a[1]==='not_read';}).length;
+	
+	var id_process = process.indexOf(false);
+	if(id_process >= 0 && tmp_notreads>0){
+		process[id_process] = true;
+		print_status();
+    }else{return;}
+	
 	var url="";
-	var j=last_read;
-	for(; j<$(pages).length; j++)
-    {
-    	last_read=j;
-        if(pages[j][1] == false){
+	var j=0;
+	for(j=0; j<$(pages).length; j++){
+        if(pages[j][1] == 'not_read'){
+			last_read=j;
         	url = pages[j][0];
-        	pages[j][1] = true;
+        	pages[j][1] = 'reading';
         	break;
         }
     }
-	if(url==""){
-		if(tmp_proc===0 && pages.length===(last_read+1) && last_read>0){
+	if(url=="" && pages.length>1){
+        if(tmp_notreads==0 && pages.length===(last_read+1) && last_read>0){
 			pause();
 			$('#btn_start').prop('disabled', true);
 			create_xml();
 		}
 		return;
 	}
-	var id_process = process.indexOf(false);
-	if(id_process >= 0){
-		process[id_process] = true;
-    }else{return;}
 
     $("#info").html(url);
     $.ajax({
@@ -61,37 +63,35 @@ function get_url(){
 		async: true,
 		type: "POST",
 		data: {d:url},
-		timeout: 1000*600,
+		timeout: 10000,
 		success: function(d){
 			var temp=[]; //[{url,read,{image_url,title,last-modified]}]
 			$.each(d, function(key,val){
-				if(val.f=="1"){
-					if($.inArray(val.u, images) >= 0){
-						return;
+				if(val.f==1){
+					if($.inArray(val.u, images)==-1){
+						images.push(val.u);
+						temp = [val.u, val.t, val.m];
+						pages[j][2].push(temp);
 					}
-				    images.push(val.u);
-					temp = [val.u, val.t, val.m];
-					pages[j][2].push(temp);
-					return;
 				}
-				if(val=="/")return;
-				if(val.u == undefined || val.u[0]!="/"){
+				else if(val=="/" || val.u=="/"){/*return;*/}
+				else if(val.u == undefined || val.u[0]!="/"){
 					$("#error").append(url+" ("+val+")("+val.u+")<br>");
-					return;
 				}
-				if(val.u=="/")return;
-
-				if($.grep(pages, function(a){return a[0]===val.u;}).length === 0){
-					temp = [val.u, false, []];
+				else if($.grep(pages, function(a){return a[0]===val.u;}).length === 0){
+					temp = [val.u, 'not_read', []];
 					pages.push(temp);
 				}
 			});
+        	pages[j][1] = 'read';
 		},
-		error: function(d,e){
-			console.error('['+e+'] Error URL: '+url+'\nResponseText:'+d.responseText);
+		error: function(d,e,c){
+        	pages[j][1] = 'not_read';
+			console.error('['+e+'] Error URL: '+url+' (Reading again..)');
 		},
 		complete: function(){
 			process[id_process] = false;
+			print_status();
 		}
 	});
 }
@@ -102,7 +102,7 @@ function start(){
 	$('#btn_create').prop('disabled', true);
 	paused = false;
 	if(timer)window.clearInterval(timer);
-	timer = window.setInterval('get_url()', 30);
+	timer = window.setInterval('get_url()', 100);
 }
 
 function pause(){
@@ -111,6 +111,8 @@ function pause(){
 	$('#btn_pause').prop('disabled', true);
 	$('#btn_create').prop('disabled', false);
 	paused = true;
+	window.clearTimeout(timer);
+	timer = false;
 }
 
 function create_xml(){
