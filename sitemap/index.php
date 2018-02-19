@@ -82,7 +82,11 @@ function get_url(){
 				if(xhr.getResponseHeader("content-type").indexOf('text/html') == 0){
 					$(this).find("a").each(function() {
 						if(!this.hasAttribute('rel') || $(this).attr('rel').indexOf('nofollow') <0){
-							if(!this.hasAttribute('href'))return true;
+							if(!this.hasAttribute('href'))
+							{
+								$("#error").append('Link sem href na pagina: '+url+'<br>');
+								return true;
+							}
 							var ut = $(this).attr("href");
 							
 							if(ut.indexOf(location.origin)==0){
@@ -94,13 +98,11 @@ function get_url(){
 							   ut.indexOf('#') != 0 && 
 							   ut.indexOf('/') != 0 && 
 							   ut.indexOf(':') < 0){
-								//if(ut.indexOf('reynaldo')>0){
-									//console.log(url.substr(0, url.lastIndexOf("/"))+'/'+ut);
-								//}
 								ut = url.substr(0, url.lastIndexOf("/"))+'/'+ut;
 							}
 
 							<? if($_SERVER["SERVER_PORT"]==443){ ?>
+							console.log(ut.indexOf(':'));
 							if(ut.indexOf('http://<?=$_SERVER["HTTP_HOST"]?>')==0 && 
 							   ut.indexOf('#') != 0 && 
 							   ut.indexOf('/') != 0 && 
@@ -116,10 +118,10 @@ function get_url(){
 								return true;
 							}
 
-							//if(ut.indexOf('/') != 0 && ut.indexOf('#') != 0)console.log(url+" -- "+ut);
 							if(ut.indexOf('/') == 0){
 								data.push({
-											 u: ut
+										u: ut,
+										g: url
 								});
 							}
 						}
@@ -149,18 +151,16 @@ function get_url(){
 						}
 						<? } ?>
 
-						//if(ut.indexOf('/') != 0 && ut.indexOf('#') != 0)console.log(url+" -- "+ut);
 						if(ut.indexOf('/') == 0){
 							data_img.push({
 								 u: ut,
 								 t: alt,
 								 m: '',
-								 g: url //origin
+								 g: url
 							});
 						}
 					});
 				}else if(xhr.getResponseHeader("content-type").indexOf('image') == 0){
-					//adiocnar no data_img
 				}
 			});
 
@@ -172,7 +172,7 @@ function get_url(){
 				}
 				else if($.grep(pages, function(a){return a[0]===val.u;}).length === 0 &&
 					   $.grep(pages, function(a){return a[0]==='';}).length === 0){
-					temp = [val.u, 'not_read', []];
+					temp = [val.u, 'not_read', [], val.g];
 					pages.push(temp);
 				}
 			});
