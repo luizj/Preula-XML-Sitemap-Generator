@@ -102,7 +102,6 @@ function get_url(){
 							}
 
 							<? if($_SERVER["SERVER_PORT"]==443){ ?>
-							console.log(ut.indexOf(':'));
 							if(ut.indexOf('http://<?=$_SERVER["HTTP_HOST"]?>')==0 && 
 							   ut.indexOf('#') != 0 && 
 							   ut.indexOf('/') != 0 && 
