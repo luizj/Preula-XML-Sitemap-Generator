@@ -1,5 +1,5 @@
 <?php
-$url = $_SERVER["SERVER_PORT"]==443?"https":"http";;
+$url = $_SERVER["SERVER_PORT"]==443?"https":"http";
 $url .= "://".$_SERVER["HTTP_HOST"];
 ?>
 <!DOCTYPE HTML>
@@ -10,10 +10,11 @@ $url .= "://".$_SERVER["HTTP_HOST"];
 <script src="jquery-3.3.1.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 
-var pages=[["/",'not_read',[]]]; //[url,read,array_images]
-var images=['/']; //[url]
+var pages=[["/",'not_read','text/html']]; //[url,read,content-type]
+var images=[]; //[url]
+var docs=[]; //[url]
 var process=[];
-var max_process=10;
+var max_process=20;
 var timer = 0;
 var paused=false;
 
@@ -36,9 +37,19 @@ function get_url(){
 		print_status();
     }else{	
 		var tmp_reads = $.grep(pages,function(a){return a[1]==='read';}).length;
-        if(tmp_notreads==0 && tmp_reads>1){
+        if(tmp_notreads==0 && tmp_reads>1 && tmp_reads == pages.length){
 			pause();
 			$('#btn_start').prop('disabled', true);
+			
+			//limpa as imgs
+			for(var h=(pages.length-1); 0<=h;h--){
+				if(pages[h][2].indexOf('text/html') != 0){
+					console.log(pages[h]);
+					pages.splice(h,1);
+				}
+			}
+			print_status();
+			
 			create_xml();
 		}
 		return;
@@ -54,34 +65,121 @@ function get_url(){
 		}
 	}
 
+	pages[j][2] = "";
 	$("#info").html(url);
 	$.ajax({
-		url: "scan.php",
-		dataType: "json",
+		url: url,
+		dataType: "html",
 		async: true,
-		type: "POST",
-		data: {d:url},
-		timeout: 15000,
-		success: function(d){
-			var temp=[]; //[{url,read,{image_url,title,last-modified]}]
-			$.each(d, function(key,val){
-				if(val.f==1){
-					if($.inArray(val.u, images)==-1){
-						images.push(val.u);
-						temp = [val.u, val.t, val.m];
-						pages[j][2].push(temp);
-					}
+		timeout: 60000,
+		cache: false,
+		success: function(response, status, xhr){
+			var data=[],data_img=[],data_doc=[];
+			pages[j][1] = 'read';
+			$($.parseHTML(response)).each(function() {
+				pages[j][2] = xhr.getResponseHeader("content-type");
+				
+				if(xhr.getResponseHeader("content-type").indexOf('text/html') == 0){
+					$(this).find("a").each(function() {
+						if(!this.hasAttribute('rel') || $(this).attr('rel').indexOf('nofollow') <0){
+							var ut = $(this).attr("href");
+
+							if(ut.indexOf(location.origin)==0){
+								ut = ut.replace(location.origin,'');	
+							}
+
+							if(ut.indexOf('https://')!=0 && 
+							   ut.indexOf('http://')!=0 && 
+							   ut.indexOf('#') != 0 && 
+							   ut.indexOf('/') != 0 && 
+							   ut.indexOf(':') < 0){
+								//if(ut.indexOf('reynaldo')>0){
+									//console.log(url.substr(0, url.lastIndexOf("/"))+'/'+ut);
+								//}
+								ut = url.substr(0, url.lastIndexOf("/"))+'/'+ut;
+							}
+
+							<? if($_SERVER["SERVER_PORT"]==443){ ?>
+							if(ut.indexOf('http://<?=$_SERVER["HTTP_HOST"]?>')==0 && 
+							   ut.indexOf('#') != 0 && 
+							   ut.indexOf('/') != 0 && 
+							   ut.indexOf(':') < 0){
+								$("#error").append('URL linkada sem HTTPS: '+url+' - '+ut+'<br>');
+								return true;
+							}
+							<? } ?>
+							
+							if(ut.indexOf('<?=$url?>')!=0 && 
+							   ut.indexOf('http')==0){
+								$("#error").append('URL externa sem nofollow: '+url+' - '+ut+'<br>');
+								return true;
+							}
+
+							//if(ut.indexOf('/') != 0 && ut.indexOf('#') != 0)console.log(url+" -- "+ut);
+							if(ut.indexOf('/') == 0){
+								data.push({
+											 u: ut
+								});
+							}
+						}
+					});
+					
+					$(this).find("img").each(function() {
+						var ut = $(this).attr("src");
+						var alt = $(this).attr("alt");
+
+						if(ut.indexOf(location.origin)==0){
+							ut = ut.replace(location.origin,'');	
+						}
+
+						if(ut.indexOf('https://')!=0 && 
+						   ut.indexOf('http://')!=0 && 
+						   ut.indexOf('#') != 0 && 
+						   ut.indexOf('/') != 0 && 
+						   ut.indexOf(':') < 0){
+							ut = url.substr(0, url.lastIndexOf("/"))+'/'+ut;
+						}
+
+						<? if($_SERVER["SERVER_PORT"]==443){ ?>
+						if(ut.indexOf('http://<?=$_SERVER["HTTP_HOST"]?>')==0 &&
+						   ut.indexOf('/') != 0){
+							$("#error").append('IMG linkada sem HTTPS: '+url+' - '+ut+'<br>');
+							return true;
+						}
+						<? } ?>
+
+						//if(ut.indexOf('/') != 0 && ut.indexOf('#') != 0)console.log(url+" -- "+ut);
+						if(ut.indexOf('/') == 0){
+							data_img.push({
+								 u: ut,
+								 t: alt,
+								 m: '',
+								 g: url //origin
+							});
+						}
+					});
+				}else if(xhr.getResponseHeader("content-type").indexOf('image') == 0){
+					//adiocnar no data_img
 				}
-				else if(val=="/" || val.u=="/"){/*return;*/}
+			});
+
+			var temp=[]; //[{url,read,{image_url,title,last-modified]}]
+			$.each(data, function(key,val){
+				if(val=="/" || val.u=="/"){/*return;*/}
 				else if(val.u == undefined || val.u[0]!="/"){
 					$("#error").append(url+" ("+val+")("+val.u+")<br>");
 				}
-				else if($.grep(pages, function(a){return a[0]===val.u;}).length === 0){
+				else if($.grep(pages, function(a){return a[0]===val.u;}).length === 0 &&
+					   $.grep(pages, function(a){return a[0]==='';}).length === 0){
 					temp = [val.u, 'not_read', []];
 					pages.push(temp);
 				}
 			});
-        	pages[j][1] = 'read';
+			$.each(data_img, function(key,val){
+				if($.grep(images, function(a){return a[0]===val.u;}).length === 0){
+					images.push([val.u, val.t, val.m, val.g]);
+				}
+			});
 		},
 		error: function(d,e,c){
 			pages[j][1] = 'not_read';
@@ -116,10 +214,11 @@ function pause(){
 function create_xml(){
 	$("#info").html('Wait, creating the sitemap.');
 	$('#btn_create').prop('disabled', true);
+
 	$.ajax({
 		type: "POST",
 		url: "save.php",
-		data: {data:JSON.stringify(pages)},
+		data: {pages:JSON.stringify(pages),images:JSON.stringify(images),docs:JSON.stringify(docs)},
 		async: true,
 		contentType: "application/x-www-form-urlencoded;charset=UTF-8",
 		success: function(d){
