@@ -13,6 +13,7 @@ function AddXML($sitemap, $text, $opt="a+")
 {
 	if($sitemap!=="")$sitemap="-".$sitemap;
 	$fp = fopen("..\\sitemap".$sitemap.".xml", $opt);
+	//$fp = fopen("sitemap".$sitemap.".xml", $opt);
 	$text = str_replace("\\n", "\x0D\x0A", $text);
 	fwrite($fp, $text."\x0D\x0A");
 	fclose($fp);
@@ -39,34 +40,34 @@ function AddHeader_index($sitemap){
 function AddURL($sitemap, $url, $changefreq="", $priority=""){
 	if(strlen($url) > 2048)return;
 
-				       $add  = '    <url>';
-				       $add .= '\n       <loc>'.$url.'</loc>';
-	if($changefreq!="")$add .= '\n       <changefreq>'.$changefreq.'</changefreq>';
-	if($priority!="")  $add .= '\n       <priority>'.$priority.'</priority>';
+				       $add  = chr(9).'<url>';
+				       $add .= '\n'.chr(9).chr(9).'<loc>'.$url.'</loc>';
+	if($changefreq!="")$add .= '\n'.chr(9).chr(9).'<changefreq>'.$changefreq.'</changefreq>';
+	if($priority!="")  $add .= '\n'.chr(9).chr(9).'<priority>'.$priority.'</priority>';
 
 	AddXML($sitemap, $add, "a+");
 }
 function AddURL_end($sitemap){
-	AddXML($sitemap, '    </url>', "a+");
+	AddXML($sitemap, chr(9).'</url>', "a+");
 }
 
 function AddImg($sitemap, $url, $lastmod, $title){
 	if(strlen($url) > 2048)return;
 
-				  $add  = '    <image:image>\n';
-				  $add .= '       <image:loc>'.$url.'</image:loc>\n';
-				//$add .= '       <image:lastmod>'.$lastmod.'</image:lastmod>\n';
-	if($title!="")$add .= '       <image:title>'.$title.'</image:title>\n';
-				  $add .= '    </image:image>';
+				    $add  = chr(9).chr(9).'<image:image>\n';
+				    $add .= chr(9).chr(9).chr(9).'<image:loc>'.$url.'</image:loc>\n';
+	if($lastmod!="")$add .= chr(9).chr(9).chr(9).'<image:lastmod>'.$lastmod.'</image:lastmod>\n';
+	  if($title!="")$add .= chr(9).chr(9).chr(9).'<image:title>'.$title.'</image:title>\n';
+				    $add .= chr(9).chr(9).'</image:image>';
 
 	AddXML($sitemap, $add, "a+");
 }
 
 function AddSitemap($sitemap, $url, $lastmod=""){
-	$add  = '    <sitemap>';
-	$add .= '\n       <loc>'.$url.'</loc>';
-	$add .= '\n       <lastmod>'.$lastmod.'</lastmod>';
-	$add .= '    </sitemap>';
+	$add  = chr(9).'<sitemap>';
+	$add .= '\n'.chr(9).chr(9).'<loc>'.$url.'</loc>';
+	$add .= '\n'.chr(9).chr(9).'<lastmod>'.$lastmod.'</lastmod>';
+	$add .= chr(9).'</sitemap>';
 	AddXML($sitemap, $add, "a+");
 }
 
@@ -80,7 +81,9 @@ function AddFooter_index($sitemap){
 
 //----------------------------------------
 
-$urls 			= json_decode($_POST['data']); //[{url,read,{image_url,title,modified}}]
+$urls 			= json_decode($_POST['pages']); //[{url,read}]
+$imgs 			= json_decode($_POST['images']); //[{url,title,modified}]
+//$docs 			= json_decode($_POST['docs']); //[{url,read}]
 $REQUEST_SCHEME = $_SERVER["SERVER_PORT"]==443?"https":"http";
 $url 			= $REQUEST_SCHEME."://".$_SERVER["HTTP_HOST"];
 
@@ -133,50 +136,53 @@ AddFooter($sitemap_link);
 ** Image Sitemap
 */
 $e=0;
-for($i=0; $i<sizeof($urls); $i++){
-	if(sizeof($urls[$i][2])==0)continue;
-
+$c="";
+for($i=0; $i<sizeof($imgs); $i++){
 	if(($e>0) && ($e%50000)==0){
 		AddFooter("img-".$sitemap_image);
 		$sitemap_image++;
 		AddHeader_image("img-".$sitemap_image);
+		$e=0;
+		$c="";
 	}
 	if($e==0)AddHeader_image("img-".$sitemap_image);
 	$e++;
 
 	// Priority
 	$priority = 10;
-	$priority = $priority-substr_count($urls[$i][0], '/');
+	$priority = $priority-substr_count($imgs[$i][0], '/');
 	if($priority<5)$priority=5;
 	$priority = $priority/10;
 
 	// Change
 	$changeArr  = array('daily','weekly','monthly');
-	$temp_change = substr_count($urls[$i][0],'/')>sizeof($changeArr)?(sizeof($changeArr)-1):(substr_count($urls[$i][0],'/')-1);
+	$temp_change = substr_count($imgs[$i][0],'/')>sizeof($changeArr)?(sizeof($changeArr)-1):(substr_count($imgs[$i][0],'/')-1);
 	$changefreq = $changeArr[$temp_change];
 
-	$urls[$i][0] = str_replace("&","&amp;", str_replace("&amp;","&",$urls[$i][0]));
-	$urls[$i][0] = str_replace("'","&apos;", $urls[$i][0]);
-	$urls[$i][0] = str_replace('"',"&quot;", $urls[$i][0]);
-	$urls[$i][0] = str_replace(">","&gt", $urls[$i][0]);
-	$urls[$i][0] = str_replace("<","&lt;", $urls[$i][0]);
+	$imgs[$i][0] = str_replace("&","&amp;", str_replace("&amp;","&",$imgs[$i][0]));
+	$imgs[$i][0] = str_replace("'","&apos;", $imgs[$i][0]);
+	$imgs[$i][0] = str_replace('"',"&quot;", $imgs[$i][0]);
+	$imgs[$i][0] = str_replace(">","&gt", $imgs[$i][0]);
+	$imgs[$i][0] = str_replace("<","&lt;", $imgs[$i][0]);
 
-	AddURL("img-".$sitemap_image, $url.$urls[$i][0], $changefreq, $priority);
-
-	// Add Images
-	$images = $urls[$i][2];
-	for($a=0; $a<sizeof($images); $a++){
-			$title = $images[$a][1];
-			$title = str_replace("&","&amp;", str_replace("&amp;","&",$title));
-			$title = str_replace("'","&apos;", $title);
-			$title = str_replace('"',"&quot;", $title);
-			$title = str_replace(">","&gt", $title);
-			$title = str_replace("<","&lt;", $title);
-
-		AddImg("img-".$sitemap_image, $url.$images[$a][0], $images[$a][2], $title);
+	if($c != $imgs[$i][3]){
+		if($e>1)AddURL_end("img-".$sitemap_image);
+		AddURL("img-".$sitemap_image, $url.$imgs[$i][3], $changefreq, $priority);
+		$c = $imgs[$i][3];
 	}
+	
+	$title = $imgs[$i][1];
+	$title = str_replace("&","&amp;", str_replace("&amp;","&",$title));
+	$title = str_replace("'","&apos;", $title);
+	$title = str_replace('"',"&quot;", $title);
+	$title = str_replace(">","&gt", $title);
+	$title = str_replace("<","&lt;", $title);
 
-	AddURL_end("img-".$sitemap_image);
+	AddImg("img-".$sitemap_image, $url.$imgs[$i][0], $imgs[$i][2], $title);
+	
+	if($i==(sizeof($imgs)-1)){
+		AddURL_end("img-".$sitemap_image);
+	}
 }
 AddFooter("img-".$sitemap_image);
 
