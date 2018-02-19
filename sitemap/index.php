@@ -82,8 +82,9 @@ function get_url(){
 				if(xhr.getResponseHeader("content-type").indexOf('text/html') == 0){
 					$(this).find("a").each(function() {
 						if(!this.hasAttribute('rel') || $(this).attr('rel').indexOf('nofollow') <0){
+							if(!this.hasAttribute('href'))return true;
 							var ut = $(this).attr("href");
-
+							
 							if(ut.indexOf(location.origin)==0){
 								ut = ut.replace(location.origin,'');	
 							}
@@ -93,6 +94,9 @@ function get_url(){
 							   ut.indexOf('#') != 0 && 
 							   ut.indexOf('/') != 0 && 
 							   ut.indexOf(':') < 0){
+								//if(ut.indexOf('reynaldo')>0){
+									//console.log(url.substr(0, url.lastIndexOf("/"))+'/'+ut);
+								//}
 								ut = url.substr(0, url.lastIndexOf("/"))+'/'+ut;
 							}
 
@@ -112,6 +116,7 @@ function get_url(){
 								return true;
 							}
 
+							//if(ut.indexOf('/') != 0 && ut.indexOf('#') != 0)console.log(url+" -- "+ut);
 							if(ut.indexOf('/') == 0){
 								data.push({
 											 u: ut
@@ -144,6 +149,7 @@ function get_url(){
 						}
 						<? } ?>
 
+						//if(ut.indexOf('/') != 0 && ut.indexOf('#') != 0)console.log(url+" -- "+ut);
 						if(ut.indexOf('/') == 0){
 							data_img.push({
 								 u: ut,
@@ -154,6 +160,7 @@ function get_url(){
 						}
 					});
 				}else if(xhr.getResponseHeader("content-type").indexOf('image') == 0){
+					//adiocnar no data_img
 				}
 			});
 
