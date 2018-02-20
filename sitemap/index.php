@@ -26,6 +26,15 @@ function print_status(){
 	$("#reads").html($.grep(pages,function(a){return a[1]==='read';}).length);
 	$("#process").html($.grep(process,function(a){return a===true;}).length);
 }
+	
+function decodeStr(a){
+	var p = new DOMParser;
+	var d = p.parseFromString('<!doctype html><body>'+a,'text/html');
+	return d.body.textContent;
+}
+function isImageUrl(url){
+    return(url.match(/\.(jpeg|jpg|gif|png)$/) != null);
+}
 function get_url(){
 	if(paused){return;}
 
@@ -116,6 +125,8 @@ function get_url(){
 								$("#error").append('URL externa sem nofollow: '+url+' - '+ut+'<br>');
 								return true;
 							}
+							
+							if(isImageUrl(ut))return true;
 
 							if(ut.indexOf('/') == 0){
 								data.push({
@@ -128,7 +139,7 @@ function get_url(){
 					
 					$(this).find("img").each(function() {
 						var ut = $(this).attr("src");
-						var alt = $(this).attr("alt");
+						var alt = decodeStr($(this).attr("alt"));
 
 						if(ut.indexOf(location.origin)==0){
 							ut = ut.replace(location.origin,'');	
