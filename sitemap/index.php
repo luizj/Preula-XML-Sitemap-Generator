@@ -80,7 +80,7 @@ function get_url(){
 		url: url,
 		dataType: "html",
 		async: true,
-		timeout: 60000,
+		timeout: 0,
 		cache: false,
 		success: function(response, status, xhr){
 			var data=[],data_img=[],data_doc=[];
@@ -209,7 +209,7 @@ function start(){
 	$('#btn_create').prop('disabled', true);
 	paused = false;
 	if(timer)window.clearInterval(timer);
-	timer = window.setInterval('get_url()', 100);
+	timer = window.setInterval('get_url()', 10);
 }
 
 function pause(){
