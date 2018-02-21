@@ -12,8 +12,7 @@ set_time_limit(0);
 function AddXML($sitemap, $text, $opt="a+")
 {
 	if($sitemap!=="")$sitemap="-".$sitemap;
-	$fp = fopen("..\\sitemap".$sitemap.".xml", $opt);
-	//$fp = fopen("sitemap".$sitemap.".xml", $opt);
+	$fp = fopen("..//sitemap".$sitemap.".xml", $opt);
 	$text = str_replace("\\n", "\x0D\x0A", $text);
 	fwrite($fp, $text."\x0D\x0A");
 	fclose($fp);
@@ -93,7 +92,7 @@ $sitemap_image 	= 0;
 /*
 ** Delete old xml
 */
-foreach(glob("..\\sitemap*.xml") as $filename){
+foreach(glob("..//sitemap*.xml") as $filename){
     unlink($filename);
 }
 
