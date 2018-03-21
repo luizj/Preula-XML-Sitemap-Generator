@@ -101,6 +101,11 @@ function get_url(){
 							if(ut.indexOf(location.origin)==0){
 								ut = ut.replace(location.origin,'');	
 							}
+							
+							if(ut.indexOf('//') == 0){
+								ut = '<? if($_SERVER["SERVER_PORT"]==443){echo "https:";}else{echo "http:";} ?>'+ut;
+								return true;
+							}
 
 							if(ut.indexOf('https://')!=0 && 
 							   ut.indexOf('http://')!=0 && 
@@ -129,6 +134,8 @@ function get_url(){
 							if(isImageUrl(ut))return true;
 
 							if(ut.indexOf('/') == 0){
+								//console.log(url+' - '+ut);
+								//console.log(this);
 								data.push({
 										u: ut,
 										g: url
@@ -146,10 +153,10 @@ function get_url(){
 						}
 
 						if(ut.indexOf('//') == 0){
-							//$("#error").append('IMG link externo: '+url+' - '+ut+'<br>');
+							ut = '<? if($_SERVER["SERVER_PORT"]==443){echo "https:";}else{echo "http:";} ?>'+ut;
 							return true;
 						}
-
+						
 						if(ut.indexOf('https://')!=0 && 
 						   ut.indexOf('http://')!=0 && 
 						   ut.indexOf('#') != 0 && 
