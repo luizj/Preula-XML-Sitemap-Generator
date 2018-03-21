@@ -145,6 +145,11 @@ function get_url(){
 							ut = ut.replace(location.origin,'');	
 						}
 
+						if(ut.indexOf('//') == 0){
+							//$("#error").append('IMG link externo: '+url+' - '+ut+'<br>');
+							return true;
+						}
+
 						if(ut.indexOf('https://')!=0 && 
 						   ut.indexOf('http://')!=0 && 
 						   ut.indexOf('#') != 0 && 
