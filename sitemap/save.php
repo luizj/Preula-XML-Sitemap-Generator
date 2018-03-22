@@ -12,7 +12,8 @@ set_time_limit(0);
 function AddXML($sitemap, $text, $opt="a+")
 {
 	if($sitemap!=="")$sitemap="-".$sitemap;
-	$fp = fopen("..//sitemap".$sitemap.".xml", $opt);
+	$fp = fopen("..\\sitemap".$sitemap.".xml", $opt);
+	//$fp = fopen("sitemap".$sitemap.".xml", $opt);
 	$text = str_replace("\\n", "\x0D\x0A", $text);
 	fwrite($fp, $text."\x0D\x0A");
 	fclose($fp);
@@ -92,7 +93,7 @@ $sitemap_image 	= 0;
 /*
 ** Delete old xml
 */
-foreach(glob("..//sitemap*.xml") as $filename){
+foreach(glob("..\\sitemap*.xml") as $filename){
     unlink($filename);
 }
 
@@ -163,6 +164,12 @@ for($i=0; $i<sizeof($imgs); $i++){
 	$imgs[$i][0] = str_replace('"',"&quot;", $imgs[$i][0]);
 	$imgs[$i][0] = str_replace(">","&gt", $imgs[$i][0]);
 	$imgs[$i][0] = str_replace("<","&lt;", $imgs[$i][0]);
+
+	$imgs[$i][3] = str_replace("&","&amp;", str_replace("&amp;","&",$imgs[$i][3]));
+	$imgs[$i][3] = str_replace("'","&apos;", $imgs[$i][3]);
+	$imgs[$i][3] = str_replace('"',"&quot;", $imgs[$i][3]);
+	$imgs[$i][3] = str_replace(">","&gt", $imgs[$i][3]);
+	$imgs[$i][3] = str_replace("<","&lt;", $imgs[$i][3]);
 
 	if($c != $imgs[$i][3]){
 		if($e>1)AddURL_end("img-".$sitemap_image);
