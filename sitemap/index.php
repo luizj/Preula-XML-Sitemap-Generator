@@ -147,6 +147,10 @@ function get_url(){
 					$(this).find("img").each(function() {
 						var ut = $(this).attr("src");
 						var alt = decodeStr($(this).attr("alt"));
+						
+						if(ut.indexOf('data:')==0){ // ignore img lazy loaded
+							return true;
+						}
 
 						if(ut.indexOf(location.origin)==0){
 							ut = ut.replace(location.origin,'');	
