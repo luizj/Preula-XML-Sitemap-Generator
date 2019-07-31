@@ -145,8 +145,13 @@ function get_url(){
 					});
 					
 					$(this).find("img").each(function() {
+						if(typeof $(this).attr("src") == "undefined")return true;
+						
 						var ut = $(this).attr("src");
-						var alt = decodeStr($(this).attr("alt"));
+						var alt = decodeStr('');
+						if(typeof $(this).attr("alt") !== "undefined"){
+							decodeStr($(this).attr("alt"))
+						}
 						
 						if(ut.indexOf('data:')==0){ // ignore img lazy loaded
 							return true;
