@@ -124,7 +124,7 @@ for($i=0; $i<sizeof($urls); $i++){
 	$urls[$i][0] = str_replace("&","&amp;", str_replace("&amp;","&",$urls[$i][0]));
 	$urls[$i][0] = str_replace("'","&apos;", $urls[$i][0]);
 	$urls[$i][0] = str_replace('"',"&quot;", $urls[$i][0]);
-	$urls[$i][0] = str_replace(">","&gt", $urls[$i][0]);
+	$urls[$i][0] = str_replace(">","&gt;", $urls[$i][0]);
 	$urls[$i][0] = str_replace("<","&lt;", $urls[$i][0]);
 
 	AddURL($sitemap_link, $url.$urls[$i][0], $changefreq, $priority);
